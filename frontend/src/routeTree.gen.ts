@@ -15,6 +15,7 @@ import { Route as LayoutAuthRouteImport } from './routes/_layout-auth'
 import { Route as LayoutAuthIndexRouteImport } from './routes/_layout-auth.index'
 import { Route as DashboardDashboardRouteImport } from './routes/dashboard/_dashboard'
 import { Route as DashboardDashboardIndexRouteImport } from './routes/dashboard/_dashboard.index'
+import { Route as DashboardDashboardNewsRouteImport } from './routes/dashboard/_dashboard.news'
 
 const DashboardRouteImport = createFileRoute('/dashboard')()
 
@@ -41,15 +42,22 @@ const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardDashboardRoute,
 } as any)
+const DashboardDashboardNewsRoute = DashboardDashboardNewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => DashboardDashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardDashboardRouteWithChildren
   '/': typeof LayoutAuthIndexRoute
+  '/dashboard/news': typeof DashboardDashboardNewsRoute
   '/dashboard/': typeof DashboardDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardDashboardIndexRoute
   '/': typeof LayoutAuthIndexRoute
+  '/dashboard/news': typeof DashboardDashboardNewsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -57,19 +65,21 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/_dashboard': typeof DashboardDashboardRouteWithChildren
   '/_layout-auth/': typeof LayoutAuthIndexRoute
+  '/dashboard/_dashboard/news': typeof DashboardDashboardNewsRoute
   '/dashboard/_dashboard/': typeof DashboardDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/' | '/dashboard/'
+  fullPaths: '/dashboard' | '/' | '/dashboard/news' | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/'
+  to: '/dashboard' | '/' | '/dashboard/news'
   id:
     | '__root__'
     | '/_layout-auth'
     | '/dashboard'
     | '/dashboard/_dashboard'
     | '/_layout-auth/'
+    | '/dashboard/_dashboard/news'
     | '/dashboard/_dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -115,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDashboardIndexRouteImport
       parentRoute: typeof DashboardDashboardRoute
     }
+    '/dashboard/_dashboard/news': {
+      id: '/dashboard/_dashboard/news'
+      path: '/news'
+      fullPath: '/dashboard/news'
+      preLoaderRoute: typeof DashboardDashboardNewsRouteImport
+      parentRoute: typeof DashboardDashboardRoute
+    }
   }
 }
 
@@ -131,10 +148,12 @@ const LayoutAuthRouteWithChildren = LayoutAuthRoute._addFileChildren(
 )
 
 interface DashboardDashboardRouteChildren {
+  DashboardDashboardNewsRoute: typeof DashboardDashboardNewsRoute
   DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
 }
 
 const DashboardDashboardRouteChildren: DashboardDashboardRouteChildren = {
+  DashboardDashboardNewsRoute: DashboardDashboardNewsRoute,
   DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
 }
 
