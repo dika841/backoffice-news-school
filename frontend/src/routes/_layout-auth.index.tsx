@@ -1,0 +1,88 @@
+import { InputText } from '@/components/shared/input-text/Input-text'
+import { Button } from '@/components/ui/button'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Form } from '@/components/ui/form'
+import { loginSchema, type TLogin } from '@/lib/schema/login.schema'
+import {
+  createFileRoute,
+  useLayoutEffect,
+  useNavigate,
+} from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
+import { useLoginMutation } from '@/hooks/mutation/use-login-mutation/use-login-mutation'
+import { useAuth } from '@/context/use-auth'
+
+export const Route = createFileRoute('/_layout-auth/')({
+  component: App,
+})
+
+function App() {
+  const form = useForm<TLogin>({
+    resolver: zodResolver(loginSchema),
+    mode: 'all',
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  })
+  const { token } = useAuth()
+  const navigate = useNavigate()
+  const loginMutate = useLoginMutation()
+
+  const onSubmit = (data: TLogin) => {
+    loginMutate.mutate(data)
+  }
+
+  useLayoutEffect(() => {
+    if (token) {
+      navigate({ to: '/dashboard' })
+    }
+  }, [token])
+  return (
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle>Login to your account</CardTitle>
+        <CardDescription>
+          Enter your Username below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <InputText
+                  name="username"
+                  type="text"
+                  label="Username"
+                  placeholder="Username"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <InputText
+                  name="password"
+                  type="password"
+                  label="Password"
+                  placeholder="********"
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  )
+}
