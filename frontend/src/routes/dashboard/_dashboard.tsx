@@ -13,10 +13,19 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { isLoggedIn } from '@/utils/helper'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/_dashboard')({
   component: RouteComponent,
+  beforeLoad: async ({ location }) => {
+    if (!isLoggedIn()) {
+      throw redirect({
+        to: '/',
+        search: location.href,
+      })
+    }
+  },
 })
 
 function RouteComponent() {
