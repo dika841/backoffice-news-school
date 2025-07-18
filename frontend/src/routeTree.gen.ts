@@ -15,7 +15,7 @@ import { Route as LayoutAuthRouteImport } from './routes/_layout-auth'
 import { Route as LayoutAuthIndexRouteImport } from './routes/_layout-auth.index'
 import { Route as DashboardDashboardRouteImport } from './routes/dashboard/_dashboard'
 import { Route as DashboardDashboardIndexRouteImport } from './routes/dashboard/_dashboard.index'
-import { Route as DashboardDashboardNewsRouteImport } from './routes/dashboard/_dashboard.news'
+import { Route as DashboardNewsDashboardCreateRouteImport } from './routes/dashboard/news/_dashboard.create'
 
 const DashboardRouteImport = createFileRoute('/dashboard')()
 
@@ -42,22 +42,23 @@ const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardDashboardRoute,
 } as any)
-const DashboardDashboardNewsRoute = DashboardDashboardNewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => DashboardDashboardRoute,
-} as any)
+const DashboardNewsDashboardCreateRoute =
+  DashboardNewsDashboardCreateRouteImport.update({
+    id: '/news/_dashboard/create',
+    path: '/news/create',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardDashboardRouteWithChildren
   '/': typeof LayoutAuthIndexRoute
-  '/dashboard/news': typeof DashboardDashboardNewsRoute
   '/dashboard/': typeof DashboardDashboardIndexRoute
+  '/dashboard/news/create': typeof DashboardNewsDashboardCreateRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardDashboardIndexRoute
   '/': typeof LayoutAuthIndexRoute
-  '/dashboard/news': typeof DashboardDashboardNewsRoute
+  '/dashboard/news/create': typeof DashboardNewsDashboardCreateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -65,22 +66,22 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/_dashboard': typeof DashboardDashboardRouteWithChildren
   '/_layout-auth/': typeof LayoutAuthIndexRoute
-  '/dashboard/_dashboard/news': typeof DashboardDashboardNewsRoute
   '/dashboard/_dashboard/': typeof DashboardDashboardIndexRoute
+  '/dashboard/news/_dashboard/create': typeof DashboardNewsDashboardCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/' | '/dashboard/news' | '/dashboard/'
+  fullPaths: '/dashboard' | '/' | '/dashboard/' | '/dashboard/news/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/' | '/dashboard/news'
+  to: '/dashboard' | '/' | '/dashboard/news/create'
   id:
     | '__root__'
     | '/_layout-auth'
     | '/dashboard'
     | '/dashboard/_dashboard'
     | '/_layout-auth/'
-    | '/dashboard/_dashboard/news'
     | '/dashboard/_dashboard/'
+    | '/dashboard/news/_dashboard/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -125,12 +126,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDashboardIndexRouteImport
       parentRoute: typeof DashboardDashboardRoute
     }
-    '/dashboard/_dashboard/news': {
-      id: '/dashboard/_dashboard/news'
-      path: '/news'
-      fullPath: '/dashboard/news'
-      preLoaderRoute: typeof DashboardDashboardNewsRouteImport
-      parentRoute: typeof DashboardDashboardRoute
+    '/dashboard/news/_dashboard/create': {
+      id: '/dashboard/news/_dashboard/create'
+      path: '/news/create'
+      fullPath: '/dashboard/news/create'
+      preLoaderRoute: typeof DashboardNewsDashboardCreateRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
@@ -148,12 +149,10 @@ const LayoutAuthRouteWithChildren = LayoutAuthRoute._addFileChildren(
 )
 
 interface DashboardDashboardRouteChildren {
-  DashboardDashboardNewsRoute: typeof DashboardDashboardNewsRoute
   DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
 }
 
 const DashboardDashboardRouteChildren: DashboardDashboardRouteChildren = {
-  DashboardDashboardNewsRoute: DashboardDashboardNewsRoute,
   DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
 }
 
@@ -162,10 +161,12 @@ const DashboardDashboardRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardDashboardRoute: typeof DashboardDashboardRouteWithChildren
+  DashboardNewsDashboardCreateRoute: typeof DashboardNewsDashboardCreateRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDashboardRoute: DashboardDashboardRouteWithChildren,
+  DashboardNewsDashboardCreateRoute: DashboardNewsDashboardCreateRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
