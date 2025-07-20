@@ -72,12 +72,12 @@ foreach ($categories as $cat) {
     }
 }
 
-
+// === GET ADMIN USER ID ===
 $stmt = $db->prepare("SELECT id FROM users WHERE username = 'admin'");
 $stmt->execute();
 $adminId = $stmt->fetchColumn();
 
-
+// === GET CATEGORY IDs ===
 $stmt = $db->query("SELECT id, slug FROM categories");
 $categoryMap = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -87,13 +87,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 // === SEED ANNOUNCEMENT ===
 echo "\nSeeding announcements...\n";
 $announcementId = Uuid::uuid4()->toString();
-$stmt = $db->prepare("SELECT COUNT(*) FROM announcements WHERE slug = ?");
 $slug = 'pendaftaran-ulang-' . time();
+$stmt = $db->prepare("SELECT COUNT(*) FROM announcements WHERE slug = ?");
 $stmt->execute([$slug]);
 
 if ($stmt->fetchColumn() == 0) {
-    $stmt = $db->prepare("INSERT INTO announcements (id, title, slug, content, author_id, is_important, start_date, end_date) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $db->prepare("INSERT INTO announcements (id, title, slug, content, author_id, is_important, start_date, end_date, category_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $announcementId,
         'Pendaftaran Ulang Semester Ganjil',
@@ -102,12 +102,10 @@ if ($stmt->fetchColumn() == 0) {
         $adminId,
         true,
         '2025-07-05',
-        '2025-07-15'
+        '2025-07-15',
+        $categoryMap['pengumuman']
     ]);
     echo "Announcement berhasil ditambahkan\n";
-
-    $stmt = $db->prepare("INSERT INTO announcement_categories (announcement_id, category_id) VALUES (?, ?)");
-    $stmt->execute([$announcementId, $categoryMap['pengumuman']]);
 }
 
 // === SEED NEWS ===
@@ -118,8 +116,8 @@ $stmt = $db->prepare("SELECT COUNT(*) FROM news WHERE slug = ?");
 $stmt->execute([$slug]);
 
 if ($stmt->fetchColumn() == 0) {
-    $stmt = $db->prepare("INSERT INTO news (id, title, slug, content, excerpt, featured_image, author_id, is_published, published_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $db->prepare("INSERT INTO news (id, title, slug, content, excerpt, featured_image, author_id, is_published, published_at, category_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $newsId,
         'Kegiatan MPLS Siswa Baru',
@@ -129,11 +127,9 @@ if ($stmt->fetchColumn() == 0) {
         null,
         $adminId,
         true,
-        date('Y-m-d H:i:s')
+        date('Y-m-d H:i:s'),
+        $categoryMap['berita']
     ]);
-
-    $stmt = $db->prepare("INSERT INTO news_categories (news_id, category_id) VALUES (?, ?)");
-    $stmt->execute([$newsId, $categoryMap['berita']]);
     echo "News berhasil ditambahkan\n";
 }
 

@@ -34,7 +34,7 @@ class AuthController
         }
 
         if (!password_verify($data->password, $userData['password'])) {
-            return ResponseHandler::sendError('Password salah', 401);
+            return ResponseHandler::sendError('Username atau Password salah', 401);
         }
 
 

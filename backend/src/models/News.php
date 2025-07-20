@@ -14,37 +14,32 @@ class News
         $this->conn = $db;
     }
 
-    public function getFilteredNews($page, $limit, $search, $category, $author, $sort)
+    public function getFilteredNews($page, $limit, $search, $categorySlug, $author, $sort)
     {
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT n.*, u.username AS author_username
+        $sql = "SELECT n.*, u.username AS author_username, c.name AS category_name, c.slug AS category_slug
                 FROM news n
                 JOIN users u ON n.author_id = u.id
-                LEFT JOIN news_categories nc ON n.id = nc.news_id
-                LEFT JOIN categories c ON nc.category_id = c.id
+                JOIN categories c ON n.category_id = c.id
                 WHERE 1=1";
 
         $params = [];
-
 
         if (!empty($search)) {
             $sql .= " AND (n.title LIKE :search OR n.content LIKE :search)";
             $params[':search'] = "%$search%";
         }
 
-
-        if (!empty($category)) {
+        if (!empty($categorySlug)) {
             $sql .= " AND c.slug = :category";
-            $params[':category'] = $category;
+            $params[':category'] = $categorySlug;
         }
-
 
         if (!empty($author)) {
             $sql .= " AND u.username = :author";
             $params[':author'] = $author;
         }
-
 
         switch ($sort) {
             case 'title_asc':
@@ -60,7 +55,6 @@ class News
                 $sql .= " ORDER BY n.published_at DESC";
         }
 
-
         $sql .= " LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($sql);
@@ -68,12 +62,12 @@ class News
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val);
         }
+
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 
         $countStmt = $this->conn->prepare("SELECT COUNT(*) FROM news");
         $countStmt->execute();
@@ -86,14 +80,21 @@ class News
             'data' => $results
         ];
     }
+
     public function insert($data)
     {
-        $sql = "INSERT INTO news (title, slug, content, excerpt, featured_image, author_id, is_published, published_at)
-            VALUES (:title, :slug, :content, :excerpt, :featured_image, :author_id, :is_published, :published_at)";
+        $data['id'] = Uuid::uuid4()->toString();
+
+        $sql = "INSERT INTO news (
+            id, title, slug, content, excerpt, featured_image, author_id, is_published, published_at, category_id
+        ) VALUES (
+            :id, :title, :slug, :content, :excerpt, :featured_image, :author_id, :is_published, :published_at, :category_id
+        )";
 
         $stmt = $this->conn->prepare($sql);
 
         return $stmt->execute([
+            ':id' => $data['id'],
             ':title' => $data['title'],
             ':slug' => $data['slug'],
             ':content' => $data['content'],
@@ -101,110 +102,79 @@ class News
             ':featured_image' => $data['featured_image'],
             ':author_id' => $data['author_id'],
             ':is_published' => $data['is_published'],
-            ':published_at' => $data['published_at']
+            ':published_at' => $data['published_at'],
+            ':category_id' => $data['category_id']
+        ]);
+    }
+    public function partialUpdate($id, $data)
+    {
+        if (empty($data)) {
+            throw new \Exception("Tidak ada data untuk diperbarui");
+        }
+
+        $fields = [];
+        $params = [];
+
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = ?";
+            $params[] = $value;
+        }
+
+        $params[] = $id;
+
+        $sql = "UPDATE news SET " . implode(', ', $fields) . " WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt->execute($params)) {
+            throw new \Exception("Gagal memperbarui data");
+        }
+
+        return true;
+    }
+
+    public function update($id, $data)
+    {
+        $sql = "UPDATE news SET 
+                title = :title,
+                slug = :slug,
+                content = :content,
+                excerpt = :excerpt,
+                featured_image = :featured_image,
+                is_published = :is_published,
+                published_at = :published_at,
+                category_id = :category_id,
+                updated_at = NOW()
+            WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            ':id' => $id,
+            ':title' => $data['title'],
+            ':slug' => $data['slug'],
+            ':content' => $data['content'],
+            ':excerpt' => $data['excerpt'],
+            ':featured_image' => $data['featured_image'],
+            ':is_published' => $data['is_published'],
+            ':published_at' => $data['published_at'],
+            ':category_id' => $data['category_id']
         ]);
     }
 
-    public function insertWithCategories($newsData, $categoryIds = [])
+    public function getByIdWithCategory($id)
     {
-        try {
-            $this->conn->beginTransaction();
+        $sql = "SELECT n.*, c.id AS category_id, c.name AS category_name, c.slug AS category_slug
+                FROM news n
+                JOIN categories c ON n.category_id = c.id
+                WHERE n.id = :id
+                LIMIT 1";
 
-           
-            $newsId = Uuid::uuid4()->toString();
-            $newsData['id'] = $newsId;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
 
-            $sql = "INSERT INTO news (id, title, slug, content, excerpt, featured_image, author_id, is_published, published_at)
-                VALUES (:id, :title, :slug, :content, :excerpt, :featured_image, :author_id, :is_published, :published_at)";
-
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([
-                ':id' => $newsData['id'],
-                ':title' => $newsData['title'],
-                ':slug' => $newsData['slug'],
-                ':content' => $newsData['content'],
-                ':excerpt' => $newsData['excerpt'],
-                ':featured_image' => $newsData['featured_image'],
-                ':author_id' => $newsData['author_id'],
-                ':is_published' => $newsData['is_published'],
-                ':published_at' => $newsData['published_at']
-            ]);
-
-          
-            if (!empty($categoryIds)) {
-                $pivotSQL = "INSERT INTO news_categories (news_id, category_id) VALUES ";
-                $params = [];
-                foreach ($categoryIds as $index => $categoryId) {
-                    $pivotSQL .= "(:news_id, :cat$index),";
-                    $params[":cat$index"] = $categoryId;
-                }
-                $pivotSQL = rtrim($pivotSQL, ',');
-                $params[':news_id'] = $newsId;
-
-                $pivotStmt = $this->conn->prepare($pivotSQL);
-                $pivotStmt->execute($params);
-            }
-
-            $this->conn->commit();
-            return true;
-        } catch (\PDOException $e) {
-            $this->conn->rollBack();
-            error_log("News insert error: " . $e->getMessage());
-            return false;
-        }
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function updateWithCategories($id, $data, $categoryIds = [])
-    {
-        try {
-            $this->conn->beginTransaction();
-
-            $sql = "UPDATE news SET 
-                    title = :title,
-                    slug = :slug,
-                    content = :content,
-                    excerpt = :excerpt,
-                    featured_image = :featured_image,
-                    is_published = :is_published,
-                    published_at = :published_at,
-                    updated_at = NOW()
-                WHERE id = :id";
-
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([
-                ':id' => $id,
-                ':title' => $data['title'],
-                ':slug' => $data['slug'],
-                ':content' => $data['content'],
-                ':excerpt' => $data['excerpt'],
-                ':featured_image' => $data['featured_image'],
-                ':is_published' => $data['is_published'],
-                ':published_at' => $data['published_at']
-            ]);
-
-           
-            $this->conn->prepare("DELETE FROM news_categories WHERE news_id = :id")->execute([':id' => $id]);
-
-        
-            if (!empty($categoryIds)) {
-                $pivotSQL = "INSERT INTO news_categories (news_id, category_id) VALUES ";
-                $params = [];
-                foreach ($categoryIds as $i => $catId) {
-                    $pivotSQL .= "(:id, :cat$i),";
-                    $params[":cat$i"] = $catId;
-                }
-                $pivotSQL = rtrim($pivotSQL, ',');
-                $params[':id'] = $id;
-                $this->conn->prepare($pivotSQL)->execute($params);
-            }
-
-            $this->conn->commit();
-            return true;
-        } catch (\PDOException $e) {
-            $this->conn->rollBack();
-            return false;
-        }
-    }
     public function delete($id)
     {
         $stmt = $this->conn->prepare("DELETE FROM news WHERE id = :id");

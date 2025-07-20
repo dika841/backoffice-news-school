@@ -20,6 +20,7 @@ Sistem backend REST API untuk mengelola berita, pengumuman, pengguna, dan media 
 ---
 
 ## 🗂️ Struktur Folder
+
 ```bash
 project-root/
 │
@@ -39,13 +40,14 @@ project-root/
 ├── .gitignore
 └── README.md
 ```
+
 ---
 
 ## ⚙️ Instalasi
 
 ### 1. Clone Repo
 
-```bash
+````bash
 git clone https://github.com/username/announcement-news-api.git
 cd announcement-news-api
 
@@ -53,24 +55,29 @@ cd announcement-news-api
 ```bash
 composer install
 
-```
+````
 
 ## Setup ENV
+
 ```bash
 DB_HOST=localhost
-DB_NAME=announcement_news
+DB_NAME=school_news
 DB_USER=root
 DB_PASS=
 ```
+
 ## Set database
-mysql -u root -p announcement_news < database_schema.sql
+
+mysql -u root -p school_news < database_schema.sql
 
 ### Run seeder
+
 ```bash
 php seed.php
 ```
 
 ## run local server
+
 ```bash
 php -S localhost:[port] -t public
 ```

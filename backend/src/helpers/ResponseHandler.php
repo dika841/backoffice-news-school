@@ -4,8 +4,9 @@ namespace App\Helpers;
 
 class ResponseHandler
 {
-    public static function sendResponse($data, $message = 'Success', $status = 200)
+    public static function sendResponse($data, $message = '', $status = 200)
     {
+        header('Content-Type: application/json');
         http_response_code($status);
         echo json_encode([
             'status' => 'success',
@@ -14,6 +15,7 @@ class ResponseHandler
         ]);
         exit;
     }
+
 
     public static function sendError($message = 'Error', $status = 400)
     {

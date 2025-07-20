@@ -1,5 +1,15 @@
-import type { TNewsParams, TNewsResponse } from '@/api/news/type'
+import type {
+  TAnnouncementsParams,
+  TAnnouncementsResponse,
+} from '@/api/announcement/type'
 import type { TResponse } from '@/common'
+import { PaginationCustom } from '@/components/shared/pagination-custom/pagination-custom'
+import { PopUpDelete } from '@/components/shared/popups'
+import { SwitchFormField } from '@/components/shared/switch-input/switch-input'
+import { TableActions } from '@/components/shared/table-actions/table-actions'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -8,44 +18,42 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { useGetNewsQuery } from '@/hooks/query/use-news-query/use-news-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { TableActions } from '@/components/shared/table-actions/table-actions'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useDebounce, useObjectState } from '@/hooks/general'
+import { useDeleteAnnounMutation } from '@/hooks/mutation/use-announ-mutation/use-announ-mutation'
+import { useGetAnnouncementsQuery } from '@/hooks/query/use-announs-query/use-announcements-query'
 import { dateFormat } from '@/utils/helper'
-import { PopUpDelete } from '@/components/shared/popups'
-import { PaginationCustom } from '@/components/shared/pagination-custom/pagination-custom'
+import { useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 
-export const Route = createFileRoute('/dashboard/_dashboard/')({
-  validateSearch: (search: Record<string, unknown>): TNewsParams => {
+export const Route = createFileRoute('/dashboard/announcements/')({
+  validateSearch: (search: Record<string, unknown>): TAnnouncementsParams => {
     return {
       page: Number(search.page ?? 1),
       limit: Number(search.limit ?? 10),
-      sort: (search.sort as string) || 'published_at_desc',
+      sort: (search.sort as string) || 'is_important',
     }
   },
   component: () => {
     const paramsQuery = Route.useSearch()
-    const { data, isFetching } = useGetNewsQuery(paramsQuery)
+    const { data, isFetching } = useGetAnnouncementsQuery(paramsQuery)
 
     return (
-      <NewsComponent
-        data={data ?? ({} as TResponse<TNewsResponse>)}
+      <AnnouncementComponent
+        data={data as TResponse<TAnnouncementsResponse>}
         isFetching={isFetching}
       />
     )
   },
 })
 
-function NewsComponent({
+function AnnouncementComponent({
   data,
   isFetching,
 }: {
-  data: TResponse<TNewsResponse>
+  data: TResponse<TAnnouncementsResponse>
   isFetching: boolean
 }) {
   const router = Route.useNavigate()
@@ -57,7 +65,8 @@ function NewsComponent({
     open: false,
     uuid: '',
   })
-
+  const deleteMutate = useDeleteAnnounMutation()
+  const queryClient = useQueryClient()
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
@@ -67,19 +76,19 @@ function NewsComponent({
     })
   }, [debounceSearch])
   return (
-    <section className="space-y-4">
-      <h1 className="text-4xl font-bold">Berita</h1>
+    <section className="space-y-6 pt-4">
+      <h1 className="text-4xl font-bold">Pengumuman</h1>
       <div className="flex w-full flex-col gap-4">
         <div className="flex justify-between">
           <Input
             type="search"
-            placeholder="Cari berita ..."
-            className="w-full max-w-[384px] rounded-sm shadow-none"
+            placeholder="Cari penggumuman ..."
+            className="w-full max-w-[384px] rounded-sm shadow-none bg-white"
             onChange={(e) => handleSearch(e)}
           />
-          <Link to="/dashboard">
+          <Link to="/dashboard/announcements/create">
             <Button size="lg" className="rounded-xl font-normal">
-              <Plus /> Tambah berita
+              <Plus /> Tambah Pengumuman
             </Button>
           </Link>
         </div>
@@ -90,16 +99,16 @@ function NewsComponent({
             <TableRow>
               <TableHead>No</TableHead>
               <TableHead>Judul</TableHead>
-              <TableHead>Tanggal dibuat</TableHead>
-              <TableHead>Tanggal diperbarui</TableHead>
+              <TableHead>Tanggal berlaku</TableHead>
+              <TableHead>Tanggal selesai</TableHead>
               <TableHead>Author</TableHead>
-              <TableHead>Publis</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Aktivasi</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isFetching ? (
-              // 5 baris skeleton
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
                   {Array.from({ length: 7 }).map((_, j) => (
@@ -115,36 +124,51 @@ function NewsComponent({
                   colSpan={7}
                   className="text-center py-8 text-gray-500"
                 >
-                  Tidak ada data berita yang ditemukan.
+                  Tidak ada data Pengumuman yang ditemukan.
                 </TableCell>
               </TableRow>
             ) : (
-              data?.data.data.map((item, index) => (
+              data?.data?.data.map((item, index) => (
                 <TableRow key={item.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{item.title}</TableCell>
                   <TableCell>
-                    {dateFormat(item.published_at as string)}
+                    {dateFormat(item.start_date.toLocaleString())}
                   </TableCell>
-                  <TableCell>{dateFormat(item.updated_at as string)}</TableCell>
-                  <TableCell>{item.author_username}</TableCell>
                   <TableCell>
-                    {item.is_published ? 'Published' : 'Not Published'}
+                    {dateFormat(item.end_date.toLocaleString())}
                   </TableCell>
-                  <TableCell className="px-8 text-right">
+                  <TableCell>{item.author}</TableCell>
+                  <TableCell>
+                    {item.is_important ? (
+                      <Badge variant={'default'}>Active</Badge>
+                    ) : (
+                      <Badge variant={'destructive'}>Non Active</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <SwitchFormField
+                      id={item.id}
+                      endpoint="/announcements"
+                      fieldName="is_important"
+                      defaultValue={item.is_important as boolean}
+                      queryKey="announcements"
+                    />
+                  </TableCell>
+                  <TableCell>
                     <TableActions
                       actions={[
                         {
-                          label: 'Edit Berita',
+                          label: 'Edit Pengumuman',
                           icon: Pencil,
                           onClick: () => {
                             router({
-                              to: `/dashboard/news/edit/${item.id}`,
+                              to: `/dashboard/announcements/edit/${item.slug}`,
                             })
                           },
                         },
                         {
-                          label: 'Delete User',
+                          label: 'Delete Pengumuman',
                           icon: Trash2,
                           onClick: () => {
                             setOpenDelete({
@@ -184,6 +208,26 @@ function NewsComponent({
         show={openDelete.open}
         setShow={(show) => setOpenDelete(() => ({ open: show }))}
         onCancel={() => setOpenDelete({ open: false, uuid: '' })}
+        onConfirm={() => {
+          deleteMutate.mutate(openDelete.uuid, {
+            onSuccess: () => {
+              setOpenDelete({ open: false, uuid: '' })
+              toast.success('Berhasil dihapus', {
+                position: 'top-right',
+                richColors: true,
+              })
+              queryClient.invalidateQueries({
+                queryKey: ['announcements'],
+              })
+            },
+            onError: () => {
+              toast.error('Gagal dihapus', {
+                position: 'top-right',
+                richColors: true,
+              })
+            },
+          })
+        }}
       />
     </section>
   )

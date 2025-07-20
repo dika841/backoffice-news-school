@@ -26,6 +26,12 @@ class User
         $stmt->execute(['username' => $username]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function getById($id)
+    {
+        $stmt = $this->conn->prepare("SELECT id, username, email, role FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     public function updateRefreshToken($userId, $token)
     {
