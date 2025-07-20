@@ -1,6 +1,9 @@
 
-CREATE DATABASE IF NOT EXISTS announcement_news DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE announcement_news;
+CREATE DATABASE IF NOT EXISTS school_news 
+  DEFAULT CHARACTER SET utf8mb4 
+  COLLATE utf8mb4_general_ci;
+
+USE school_news;
 
 
 CREATE TABLE users (
@@ -34,20 +37,13 @@ CREATE TABLE news (
     excerpt VARCHAR(255),
     featured_image VARCHAR(255),
     author_id CHAR(36) NOT NULL,
+    category_id CHAR(36) NOT NULL,
     is_published BOOLEAN DEFAULT TRUE,
     published_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-
-CREATE TABLE news_categories (
-    news_id CHAR(36) NOT NULL,
-    category_id CHAR(36) NOT NULL,
-    PRIMARY KEY (news_id, category_id),
-    FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 
@@ -57,21 +53,14 @@ CREATE TABLE announcements (
     slug VARCHAR(255) NOT NULL UNIQUE,
     content TEXT NOT NULL,
     author_id CHAR(36) NOT NULL,
+    category_id CHAR(36) NOT NULL,
     is_important BOOLEAN DEFAULT FALSE,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-
-CREATE TABLE announcement_categories (
-    announcement_id CHAR(36) NOT NULL,
-    category_id CHAR(36) NOT NULL,
-    PRIMARY KEY (announcement_id, category_id),
-    FOREIGN KEY (announcement_id) REFERENCES announcements(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 

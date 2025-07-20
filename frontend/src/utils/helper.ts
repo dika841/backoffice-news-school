@@ -8,7 +8,7 @@ export const isLoggedIn = async (): Promise<boolean> => {
 
     const parsedCookie = JSON.parse(cookie)
     const token = parsedCookie?.state?.token
-    console.log(token)
+
     return !!token
   } catch (error) {
     console.error('Error checking auth status:', error)
@@ -21,3 +21,7 @@ export const dateFormat = (date: string): string =>
     month: 'long',
     day: 'numeric',
   })
+
+export const formatToMySQLDatetime = (date: Date): string => {
+  return date.toISOString().slice(0, 19).replace('T', ' ')
+}

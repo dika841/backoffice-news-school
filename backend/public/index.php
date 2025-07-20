@@ -1,13 +1,24 @@
 <?php
-header("Access-Control-Allow-Origin: *"); 
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+$allowedOrigins = [
+    'http://localhost:3000',
+    'https://myapp.com',
+    'https://admin.myapp.com',
+];
 
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH,OPTIONS");
+    header("Vary: Origin");
+}
+
+// TANGGAPI OPTIONS LANGSUNG SEBELUM MELANJUTKAN APA PUN
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -38,6 +49,11 @@ if ($uri[0] === 'refresh-token' && $method === 'POST') {
     $controller->refreshToken();
     return;
 }
+if ($uri[0] === 'news' && $method === 'GET' && isset($uri[1])) {
+    $controller = new NewsController($db);
+    $controller->getById($uri[1]);
+    return;
+}
 if ($uri[0] === 'news' && $method === 'GET') {
     $controller = new NewsController($db);
     $controller->getAll();
@@ -50,7 +66,12 @@ if ($uri[0] === 'news' && $method === 'POST') {
     $controller->create();
     return;
 }
-
+if ($uri[0] === 'news' && $method === 'PATCH' && isset($uri[1])) {
+    AuthMiddleware::authorize();
+    $controller = new NewsController($db);
+    $controller->partialUpdate($uri[1]); // method baru
+    return;
+}
 if ($uri[0] === 'news' && $method === 'PUT' && isset($uri[1])) {
     AuthMiddleware::authorize();
     $controller = new NewsController($db);
@@ -63,7 +84,11 @@ if ($uri[0] === 'news' && $method === 'DELETE' && isset($uri[1])) {
     $controller->delete($uri[1]);
     return;
 }
-
+if ($uri[0] === 'announcements' && $method === 'GET' && isset($uri[1])) {
+    $controller = new AnnouncementController($db);
+    $controller->getBySlug($uri[1]);
+    return;
+}
 if ($uri[0] === 'announcements' && $method === 'GET') {
     $controller = new AnnouncementController($db);
     $controller->getAll();
@@ -76,7 +101,12 @@ if ($uri[0] === 'announcements' && $method === 'POST') {
     $controller->create();
     return;
 }
-
+if ($uri[0] === 'announcements' && $method === 'PATCH' && isset($uri[1])) {
+    AuthMiddleware::authorize();
+    $controller = new AnnouncementController($db);
+    $controller->partialUpdate($uri[1]);
+    return;
+}
 if ($uri[0] === 'announcements' && $method === 'PUT' && isset($uri[1])) {
     AuthMiddleware::authorize();
     $controller = new AnnouncementController($db);
@@ -90,7 +120,12 @@ if ($uri[0] === 'announcements' && $method === 'DELETE' && isset($uri[1])) {
     $controller->delete($uri[1]);
     return;
 }
-
+if ($uri[0] === 'categories' && $method === 'GET' && isset($uri[1])) {
+    AuthMiddleware::authorize();
+    $controller = new CategoryController($db);
+    $controller->getById($uri[1]);
+    return;
+}
 if ($uri[0] === 'categories' && $method === 'GET') {
     $controller = new CategoryController($db);
     $controller->getAll();
@@ -118,7 +153,12 @@ if ($uri[0] === 'categories' && $method === 'DELETE' && isset($uri[1])) {
     return;
 }
 
-
+if ($uri[0] === 'users' && $method === 'GET' && isset($uri[1])) {
+    AuthMiddleware::authorize();
+    $controller = new UserController($db);
+    $controller->getById($uri[1]);
+    return;
+}
 if ($uri[0] === 'users' && $method === 'GET') {
     AuthMiddleware::authorize();
     $controller = new UserController($db);

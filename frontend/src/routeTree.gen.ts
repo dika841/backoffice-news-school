@@ -8,102 +8,234 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutAuthRouteImport } from './routes/_layout-auth'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as LayoutAuthIndexRouteImport } from './routes/_layout-auth.index'
-import { Route as DashboardDashboardRouteImport } from './routes/dashboard/_dashboard'
-import { Route as DashboardDashboardIndexRouteImport } from './routes/dashboard/_dashboard.index'
-import { Route as DashboardNewsDashboardCreateRouteImport } from './routes/dashboard/news/_dashboard.create'
+import { Route as DashboardUsersIndexRouteImport } from './routes/dashboard/users/index'
+import { Route as DashboardCategoriesIndexRouteImport } from './routes/dashboard/categories/index'
+import { Route as DashboardAnnouncementsIndexRouteImport } from './routes/dashboard/announcements/index'
+import { Route as DashboardUsersCreateIndexRouteImport } from './routes/dashboard/users/create/index'
+import { Route as DashboardNewsCreateIndexRouteImport } from './routes/dashboard/news/create/index'
+import { Route as DashboardCategoriesCreateIndexRouteImport } from './routes/dashboard/categories/create/index'
+import { Route as DashboardAnnouncementsCreateIndexRouteImport } from './routes/dashboard/announcements/create/index'
+import { Route as DashboardUsersEditUserIdRouteImport } from './routes/dashboard/users/edit/$userId'
+import { Route as DashboardNewsEditNewsIdRouteImport } from './routes/dashboard/news/edit/$newsId'
+import { Route as DashboardCategoriesEditCategoryIdRouteImport } from './routes/dashboard/categories/edit/$categoryId'
+import { Route as DashboardAnnouncementsEditSlugRouteImport } from './routes/dashboard/announcements/edit/$slug'
 
-const DashboardRouteImport = createFileRoute('/dashboard')()
-
-const DashboardRoute = DashboardRouteImport.update({
+const LayoutAuthRoute = LayoutAuthRouteImport.update({
+  id: '/_layout-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutAuthRoute = LayoutAuthRouteImport.update({
-  id: '/_layout-auth',
-  getParentRoute: () => rootRouteImport,
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const LayoutAuthIndexRoute = LayoutAuthIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutAuthRoute,
 } as any)
-const DashboardDashboardRoute = DashboardDashboardRouteImport.update({
-  id: '/_dashboard',
-  getParentRoute: () => DashboardRoute,
+const DashboardUsersIndexRoute = DashboardUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardDashboardRoute,
+const DashboardCategoriesIndexRoute =
+  DashboardCategoriesIndexRouteImport.update({
+    id: '/categories/',
+    path: '/categories/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardAnnouncementsIndexRoute =
+  DashboardAnnouncementsIndexRouteImport.update({
+    id: '/announcements/',
+    path: '/announcements/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardUsersCreateIndexRoute =
+  DashboardUsersCreateIndexRouteImport.update({
+    id: '/users/create/',
+    path: '/users/create/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardNewsCreateIndexRoute =
+  DashboardNewsCreateIndexRouteImport.update({
+    id: '/news/create/',
+    path: '/news/create/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardCategoriesCreateIndexRoute =
+  DashboardCategoriesCreateIndexRouteImport.update({
+    id: '/categories/create/',
+    path: '/categories/create/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardAnnouncementsCreateIndexRoute =
+  DashboardAnnouncementsCreateIndexRouteImport.update({
+    id: '/announcements/create/',
+    path: '/announcements/create/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardUsersEditUserIdRoute =
+  DashboardUsersEditUserIdRouteImport.update({
+    id: '/users/edit/$userId',
+    path: '/users/edit/$userId',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardNewsEditNewsIdRoute = DashboardNewsEditNewsIdRouteImport.update({
+  id: '/news/edit/$newsId',
+  path: '/news/edit/$newsId',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardNewsDashboardCreateRoute =
-  DashboardNewsDashboardCreateRouteImport.update({
-    id: '/news/_dashboard/create',
-    path: '/news/create',
-    getParentRoute: () => DashboardRoute,
+const DashboardCategoriesEditCategoryIdRoute =
+  DashboardCategoriesEditCategoryIdRouteImport.update({
+    id: '/categories/edit/$categoryId',
+    path: '/categories/edit/$categoryId',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardAnnouncementsEditSlugRoute =
+  DashboardAnnouncementsEditSlugRouteImport.update({
+    id: '/announcements/edit/$slug',
+    path: '/announcements/edit/$slug',
+    getParentRoute: () => DashboardRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof DashboardDashboardRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/': typeof LayoutAuthIndexRoute
-  '/dashboard/': typeof DashboardDashboardIndexRoute
-  '/dashboard/news/create': typeof DashboardNewsDashboardCreateRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/announcements': typeof DashboardAnnouncementsIndexRoute
+  '/dashboard/categories': typeof DashboardCategoriesIndexRoute
+  '/dashboard/users': typeof DashboardUsersIndexRoute
+  '/dashboard/announcements/edit/$slug': typeof DashboardAnnouncementsEditSlugRoute
+  '/dashboard/categories/edit/$categoryId': typeof DashboardCategoriesEditCategoryIdRoute
+  '/dashboard/news/edit/$newsId': typeof DashboardNewsEditNewsIdRoute
+  '/dashboard/users/edit/$userId': typeof DashboardUsersEditUserIdRoute
+  '/dashboard/announcements/create': typeof DashboardAnnouncementsCreateIndexRoute
+  '/dashboard/categories/create': typeof DashboardCategoriesCreateIndexRoute
+  '/dashboard/news/create': typeof DashboardNewsCreateIndexRoute
+  '/dashboard/users/create': typeof DashboardUsersCreateIndexRoute
 }
 export interface FileRoutesByTo {
-  '/dashboard': typeof DashboardDashboardIndexRoute
   '/': typeof LayoutAuthIndexRoute
-  '/dashboard/news/create': typeof DashboardNewsDashboardCreateRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/announcements': typeof DashboardAnnouncementsIndexRoute
+  '/dashboard/categories': typeof DashboardCategoriesIndexRoute
+  '/dashboard/users': typeof DashboardUsersIndexRoute
+  '/dashboard/announcements/edit/$slug': typeof DashboardAnnouncementsEditSlugRoute
+  '/dashboard/categories/edit/$categoryId': typeof DashboardCategoriesEditCategoryIdRoute
+  '/dashboard/news/edit/$newsId': typeof DashboardNewsEditNewsIdRoute
+  '/dashboard/users/edit/$userId': typeof DashboardUsersEditUserIdRoute
+  '/dashboard/announcements/create': typeof DashboardAnnouncementsCreateIndexRoute
+  '/dashboard/categories/create': typeof DashboardCategoriesCreateIndexRoute
+  '/dashboard/news/create': typeof DashboardNewsCreateIndexRoute
+  '/dashboard/users/create': typeof DashboardUsersCreateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/_layout-auth': typeof LayoutAuthRouteWithChildren
-  '/dashboard': typeof DashboardRouteWithChildren
-  '/dashboard/_dashboard': typeof DashboardDashboardRouteWithChildren
   '/_layout-auth/': typeof LayoutAuthIndexRoute
-  '/dashboard/_dashboard/': typeof DashboardDashboardIndexRoute
-  '/dashboard/news/_dashboard/create': typeof DashboardNewsDashboardCreateRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/announcements/': typeof DashboardAnnouncementsIndexRoute
+  '/dashboard/categories/': typeof DashboardCategoriesIndexRoute
+  '/dashboard/users/': typeof DashboardUsersIndexRoute
+  '/dashboard/announcements/edit/$slug': typeof DashboardAnnouncementsEditSlugRoute
+  '/dashboard/categories/edit/$categoryId': typeof DashboardCategoriesEditCategoryIdRoute
+  '/dashboard/news/edit/$newsId': typeof DashboardNewsEditNewsIdRoute
+  '/dashboard/users/edit/$userId': typeof DashboardUsersEditUserIdRoute
+  '/dashboard/announcements/create/': typeof DashboardAnnouncementsCreateIndexRoute
+  '/dashboard/categories/create/': typeof DashboardCategoriesCreateIndexRoute
+  '/dashboard/news/create/': typeof DashboardNewsCreateIndexRoute
+  '/dashboard/users/create/': typeof DashboardUsersCreateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/' | '/dashboard/' | '/dashboard/news/create'
+  fullPaths:
+    | '/dashboard'
+    | '/'
+    | '/dashboard/'
+    | '/dashboard/announcements'
+    | '/dashboard/categories'
+    | '/dashboard/users'
+    | '/dashboard/announcements/edit/$slug'
+    | '/dashboard/categories/edit/$categoryId'
+    | '/dashboard/news/edit/$newsId'
+    | '/dashboard/users/edit/$userId'
+    | '/dashboard/announcements/create'
+    | '/dashboard/categories/create'
+    | '/dashboard/news/create'
+    | '/dashboard/users/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/' | '/dashboard/news/create'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/dashboard/announcements'
+    | '/dashboard/categories'
+    | '/dashboard/users'
+    | '/dashboard/announcements/edit/$slug'
+    | '/dashboard/categories/edit/$categoryId'
+    | '/dashboard/news/edit/$newsId'
+    | '/dashboard/users/edit/$userId'
+    | '/dashboard/announcements/create'
+    | '/dashboard/categories/create'
+    | '/dashboard/news/create'
+    | '/dashboard/users/create'
   id:
     | '__root__'
-    | '/_layout-auth'
     | '/dashboard'
-    | '/dashboard/_dashboard'
+    | '/_layout-auth'
     | '/_layout-auth/'
-    | '/dashboard/_dashboard/'
-    | '/dashboard/news/_dashboard/create'
+    | '/dashboard/'
+    | '/dashboard/announcements/'
+    | '/dashboard/categories/'
+    | '/dashboard/users/'
+    | '/dashboard/announcements/edit/$slug'
+    | '/dashboard/categories/edit/$categoryId'
+    | '/dashboard/news/edit/$newsId'
+    | '/dashboard/users/edit/$userId'
+    | '/dashboard/announcements/create/'
+    | '/dashboard/categories/create/'
+    | '/dashboard/news/create/'
+    | '/dashboard/users/create/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LayoutAuthRoute: typeof LayoutAuthRouteWithChildren
-  DashboardRoute: typeof DashboardRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_layout-auth': {
       id: '/_layout-auth'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof LayoutAuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/_layout-auth/': {
       id: '/_layout-auth/'
@@ -112,29 +244,121 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAuthIndexRouteImport
       parentRoute: typeof LayoutAuthRoute
     }
-    '/dashboard/_dashboard': {
-      id: '/dashboard/_dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardDashboardRouteImport
-      parentRoute: typeof DashboardRoute
+    '/dashboard/users/': {
+      id: '/dashboard/users/'
+      path: '/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof DashboardUsersIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/_dashboard/': {
-      id: '/dashboard/_dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardDashboardIndexRouteImport
-      parentRoute: typeof DashboardDashboardRoute
+    '/dashboard/categories/': {
+      id: '/dashboard/categories/'
+      path: '/categories'
+      fullPath: '/dashboard/categories'
+      preLoaderRoute: typeof DashboardCategoriesIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/news/_dashboard/create': {
-      id: '/dashboard/news/_dashboard/create'
+    '/dashboard/announcements/': {
+      id: '/dashboard/announcements/'
+      path: '/announcements'
+      fullPath: '/dashboard/announcements'
+      preLoaderRoute: typeof DashboardAnnouncementsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/users/create/': {
+      id: '/dashboard/users/create/'
+      path: '/users/create'
+      fullPath: '/dashboard/users/create'
+      preLoaderRoute: typeof DashboardUsersCreateIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/news/create/': {
+      id: '/dashboard/news/create/'
       path: '/news/create'
       fullPath: '/dashboard/news/create'
-      preLoaderRoute: typeof DashboardNewsDashboardCreateRouteImport
-      parentRoute: typeof DashboardRoute
+      preLoaderRoute: typeof DashboardNewsCreateIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/categories/create/': {
+      id: '/dashboard/categories/create/'
+      path: '/categories/create'
+      fullPath: '/dashboard/categories/create'
+      preLoaderRoute: typeof DashboardCategoriesCreateIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/announcements/create/': {
+      id: '/dashboard/announcements/create/'
+      path: '/announcements/create'
+      fullPath: '/dashboard/announcements/create'
+      preLoaderRoute: typeof DashboardAnnouncementsCreateIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/users/edit/$userId': {
+      id: '/dashboard/users/edit/$userId'
+      path: '/users/edit/$userId'
+      fullPath: '/dashboard/users/edit/$userId'
+      preLoaderRoute: typeof DashboardUsersEditUserIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/news/edit/$newsId': {
+      id: '/dashboard/news/edit/$newsId'
+      path: '/news/edit/$newsId'
+      fullPath: '/dashboard/news/edit/$newsId'
+      preLoaderRoute: typeof DashboardNewsEditNewsIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/categories/edit/$categoryId': {
+      id: '/dashboard/categories/edit/$categoryId'
+      path: '/categories/edit/$categoryId'
+      fullPath: '/dashboard/categories/edit/$categoryId'
+      preLoaderRoute: typeof DashboardCategoriesEditCategoryIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/announcements/edit/$slug': {
+      id: '/dashboard/announcements/edit/$slug'
+      path: '/announcements/edit/$slug'
+      fullPath: '/dashboard/announcements/edit/$slug'
+      preLoaderRoute: typeof DashboardAnnouncementsEditSlugRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
   }
 }
+
+interface DashboardRouteRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAnnouncementsIndexRoute: typeof DashboardAnnouncementsIndexRoute
+  DashboardCategoriesIndexRoute: typeof DashboardCategoriesIndexRoute
+  DashboardUsersIndexRoute: typeof DashboardUsersIndexRoute
+  DashboardAnnouncementsEditSlugRoute: typeof DashboardAnnouncementsEditSlugRoute
+  DashboardCategoriesEditCategoryIdRoute: typeof DashboardCategoriesEditCategoryIdRoute
+  DashboardNewsEditNewsIdRoute: typeof DashboardNewsEditNewsIdRoute
+  DashboardUsersEditUserIdRoute: typeof DashboardUsersEditUserIdRoute
+  DashboardAnnouncementsCreateIndexRoute: typeof DashboardAnnouncementsCreateIndexRoute
+  DashboardCategoriesCreateIndexRoute: typeof DashboardCategoriesCreateIndexRoute
+  DashboardNewsCreateIndexRoute: typeof DashboardNewsCreateIndexRoute
+  DashboardUsersCreateIndexRoute: typeof DashboardUsersCreateIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAnnouncementsIndexRoute: DashboardAnnouncementsIndexRoute,
+  DashboardCategoriesIndexRoute: DashboardCategoriesIndexRoute,
+  DashboardUsersIndexRoute: DashboardUsersIndexRoute,
+  DashboardAnnouncementsEditSlugRoute: DashboardAnnouncementsEditSlugRoute,
+  DashboardCategoriesEditCategoryIdRoute:
+    DashboardCategoriesEditCategoryIdRoute,
+  DashboardNewsEditNewsIdRoute: DashboardNewsEditNewsIdRoute,
+  DashboardUsersEditUserIdRoute: DashboardUsersEditUserIdRoute,
+  DashboardAnnouncementsCreateIndexRoute:
+    DashboardAnnouncementsCreateIndexRoute,
+  DashboardCategoriesCreateIndexRoute: DashboardCategoriesCreateIndexRoute,
+  DashboardNewsCreateIndexRoute: DashboardNewsCreateIndexRoute,
+  DashboardUsersCreateIndexRoute: DashboardUsersCreateIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
 
 interface LayoutAuthRouteChildren {
   LayoutAuthIndexRoute: typeof LayoutAuthIndexRoute
@@ -148,34 +372,9 @@ const LayoutAuthRouteWithChildren = LayoutAuthRoute._addFileChildren(
   LayoutAuthRouteChildren,
 )
 
-interface DashboardDashboardRouteChildren {
-  DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
-}
-
-const DashboardDashboardRouteChildren: DashboardDashboardRouteChildren = {
-  DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
-}
-
-const DashboardDashboardRouteWithChildren =
-  DashboardDashboardRoute._addFileChildren(DashboardDashboardRouteChildren)
-
-interface DashboardRouteChildren {
-  DashboardDashboardRoute: typeof DashboardDashboardRouteWithChildren
-  DashboardNewsDashboardCreateRoute: typeof DashboardNewsDashboardCreateRoute
-}
-
-const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardDashboardRoute: DashboardDashboardRouteWithChildren,
-  DashboardNewsDashboardCreateRoute: DashboardNewsDashboardCreateRoute,
-}
-
-const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
-  DashboardRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LayoutAuthRoute: LayoutAuthRouteWithChildren,
-  DashboardRoute: DashboardRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

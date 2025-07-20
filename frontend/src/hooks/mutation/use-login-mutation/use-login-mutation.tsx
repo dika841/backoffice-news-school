@@ -10,7 +10,8 @@ export const useLoginMutation = () => {
     mutationFn: async (payload: TLogin) => await login(payload),
     onSuccess: async (data) => {
       const isToken = data.data.access_token
-      signIn(isToken as string)
+      const isRefreshToken = data.data.refresh_token
+      signIn(isToken as string, isRefreshToken as string)
     },
   })
 }

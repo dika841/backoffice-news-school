@@ -5,20 +5,17 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { loginSchema, type TLogin } from '@/lib/schema/login.schema'
-import {
-  createFileRoute,
-  useLayoutEffect,
-  useNavigate,
-} from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { useLoginMutation } from '@/hooks/mutation/use-login-mutation/use-login-mutation'
 import { useAuth } from '@/context/use-auth'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_layout-auth/')({
   component: App,
@@ -33,19 +30,34 @@ function App() {
       password: '',
     },
   })
-  const { token } = useAuth()
+  const { accessToken } = useAuth()
   const navigate = useNavigate()
   const loginMutate = useLoginMutation()
 
   const onSubmit = (data: TLogin) => {
-    loginMutate.mutate(data)
+    loginMutate.mutate(data, {
+      onSuccess: () => {
+        toast.success('Login Berhasil', {
+          position: 'top-right',
+          richColors: true,
+          description: 'Selamat datang di dashboard',
+        })
+      },
+      onError: () => {
+        toast.error('Login Gagal', {
+          position: 'top-right',
+          richColors: true,
+          description: 'Username atau password salah',
+        })
+      },
+    })
   }
 
-  useLayoutEffect(() => {
-    if (token) {
+  useEffect(() => {
+    if (accessToken) {
       navigate({ to: '/dashboard' })
     }
-  }, [token])
+  }, [accessToken])
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -57,7 +69,7 @@ function App() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 mb-2">
               <div className="grid gap-2">
                 <InputText
                   name="username"
@@ -77,7 +89,11 @@ function App() {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full"
+              isLoading={loginMutate.isPending}
+            >
               Login
             </Button>
           </form>

@@ -19,7 +19,16 @@ class CategoryController
         $data = $this->category->getAll();
         ResponseHandler::sendResponse($data);
     }
+    public function getById($id)
+    {
+        $category = $this->category->getById($id);
 
+        if ($category) {
+            ResponseHandler::sendResponse($category);
+        } else {
+            ResponseHandler::sendError("Kategori tidak ditemukan", 404);
+        }
+    }
     public function create()
     {
         $input = json_decode(file_get_contents("php://input"), true);

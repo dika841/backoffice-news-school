@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Command, Frame, Map, PieChart, User2 } from 'lucide-react'
+import { ChartBarStacked, Megaphone, Newspaper, User2 } from 'lucide-react'
 import { NavUser } from '@/components/nav-user'
 import {
   Sidebar,
@@ -11,6 +11,8 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { NavMenu } from './nav-menu'
+import { useAuth } from '@/context/use-auth'
+import { decodeToken } from '@/hooks/use-user-data'
 
 const data = {
   user: {
@@ -22,21 +24,21 @@ const data = {
   menu: [
     {
       name: 'Berita',
-      url: '/dashboard/news',
-      icon: Frame,
+      url: '/dashboard',
+      icon: Newspaper,
     },
     {
       name: 'Pengumuman',
       url: '/dashboard/announcements',
-      icon: PieChart,
+      icon: Megaphone,
     },
     {
       name: 'Kategori',
       url: '/dashboard/categories',
-      icon: Map,
+      icon: ChartBarStacked,
     },
     {
-      name: 'User Management',
+      name: 'Manajemen Akun',
       url: '/dashboard/users',
       icon: User2,
     },
@@ -44,19 +46,23 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { signOut, accessToken } = useAuth()
+  const userData = accessToken !== null ? decodeToken(accessToken!) : null
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+              <a href="/dashboard">
+                <div className=" flex aspect-square size-12 items-center justify-center rounded-lg">
+                  <img src="/logo.webp" alt="logo smk muhamadiyah sumowono" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Sekolah</span>
-                  <span className="truncate text-xs">Pendidikan</span>
+                  <span className="truncate font-medium">
+                    Smk Muhammadiyah Sumowono
+                  </span>
+                  <span className="truncate text-xs">Admin Panel</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -67,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMenu menu={data.menu} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser role={userData?.role} signOut={signOut} />
       </SidebarFooter>
     </Sidebar>
   )

@@ -20,6 +20,17 @@ class UserController
         ResponseHandler::sendResponse($users);
     }
 
+    public function getById($id)
+    {
+        $user = $this->user->getById($id);
+
+        if ($user) {
+            ResponseHandler::sendResponse($user);
+        } else {
+            ResponseHandler::sendError("User tidak ditemukan", 404);
+        }
+    }
+
     public function create()
     {
         $data = json_decode(file_get_contents("php://input"), true);
