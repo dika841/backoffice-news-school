@@ -210,7 +210,7 @@ function NewsComponent({
               toast.success('Berhasil dihapus', {
                 position: 'top-right',
                 richColors: true,
-                description: 'Data baru berhasil dihapus',
+                description: 'Berita berhasil dihapus',
               })
               queryClient.invalidateQueries({
                 queryKey: ['news'],

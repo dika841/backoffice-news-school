@@ -28,7 +28,7 @@ export function NavMenu({
           <SidebarMenuItem
             key={item.name}
             className={cn({
-              'rounded-lg bg-blue-400 text-white':
+              'rounded-lg bg-primary text-white':
                 location.pathname === item.url,
             })}
           >

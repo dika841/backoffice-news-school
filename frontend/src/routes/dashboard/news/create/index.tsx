@@ -51,7 +51,7 @@ function RouteComponent() {
             to: '/dashboard',
           })
         },
-        onError: (error) => {
+        onError: (error: Error) => {
           toast.error('Berita gagal ditambahkan', {
             position: 'top-right',
             richColors: true,

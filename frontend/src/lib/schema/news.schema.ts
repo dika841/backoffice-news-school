@@ -19,8 +19,8 @@ export const newsFormSchema = z.object({
       'Gambar utama harus diunggah',
     )
     .refine(
-      (file) => typeof file === 'string' || file.size <= 5 * 1024 * 1024,
-      'Ukuran gambar maksimal 5MB',
+      (file) => typeof file === 'string' || file.size <= 2 * 1024 * 1024,
+      'Ukuran gambar maksimal 2MB',
     )
     .refine(
       (file) =>

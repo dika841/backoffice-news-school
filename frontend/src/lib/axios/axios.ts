@@ -7,7 +7,6 @@ export const Api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
 })
 
 Api.interceptors.request.use((config) => {
@@ -58,7 +57,6 @@ Api.interceptors.response.use(
             refresh_token: refreshToken,
           },
           {
-            withCredentials: true,
             headers: {
               'Content-Type': 'application/json',
             },

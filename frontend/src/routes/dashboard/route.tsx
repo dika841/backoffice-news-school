@@ -49,7 +49,7 @@ function RouteComponent() {
               </div>
             </div>
           </header>
-          <div className=" p-4 pt-0 bg-slate-50 h-full">
+          <div className=" p-4 pt-0  h-full">
             <Outlet />
           </div>
         </SidebarInset>

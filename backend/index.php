@@ -1,25 +1,19 @@
 <?php
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-$allowedOrigins = [
-    'http://localhost:3000',
-    'https://myapp.com',
-    'https://admin.myapp.com',
-];
 
-if (in_array($origin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: $origin");
-    header("Access-Control-Allow-Credentials: true");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization");
-    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH,OPTIONS");
-    header("Vary: Origin");
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Methods: HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method,Access-Control-Request-Headers, Authorization");
+header('Content-Type: application/json');
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method == "OPTIONS") {
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method,Access-Control-Request-Headers, Authorization");
+header("HTTP/1.1 200 OK");
+die();
 }
 
-// TANGGAPI OPTIONS LANGSUNG SEBELUM MELANJUTKAN APA PUN
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
+
 
 use Dotenv\Dotenv;
 use App\Config\Database;
@@ -31,7 +25,8 @@ use App\Controllers\CategoryController;
 use App\Controllers\UserController;
 use App\Controllers\MediaController;
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv = Dotenv::createImmutable(__DIR__);
+
 $dotenv->load();
 
 $db = (new Database())->connect();

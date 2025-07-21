@@ -59,7 +59,7 @@ function App() {
     }
   }, [accessToken])
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm rounded-none">
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
         <CardDescription>

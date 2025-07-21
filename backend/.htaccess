@@ -1,11 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Handle /api prefix
-    RewriteRule ^api/(.*)$ $1 [L,QSA]
-    
-    # Redirect all requests to index.php
+
+    # Jika file/folder tidak ada, arahkan ke index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php [L,QSA]
+    RewriteRule ^ index.php [QSA,L]
 </IfModule>
